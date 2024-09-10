@@ -24,8 +24,7 @@
         "illuminate/console": "^10.17",
         "illuminate/filesystem": "^10.17",
         "illuminate/support": "^10.17",
-        "illuminate/validation": "^10.17",
-        "symfony/console": "^7.0"
+        "illuminate/validation": "^10.17"
     },
     "extra": {
         "branch-alias": {
