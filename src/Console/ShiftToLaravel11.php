@@ -99,5 +99,22 @@ trait ShiftToLaravel11
             'composer update -W',
         ]);
 
+        // upgrade composer.json
+        $this->runCommands([
+            'composer require granule/starter-kit:dev-v6-dev --no-install',
+            'composer require inertiajs/inertia-laravel:^1.3.0 --no-install',
+            'composer require laravel/framework:^11.9 --no-install',
+            'composer require laravel/reverb:^1.3 --no-install',
+            'composer require laravel/sanctum:^4.0 --no-install',
+            'composer require laravel/tinker:^2.9 --no-install',
+            
+            'composer require fakerphp/faker:^1.23 --dev --no-install',
+            'composer require laravel/breeze:v2.1 --dev --no-install',
+            'composer require laravel/pint:^1.13 --dev --no-install',
+            'composer require laravel/sail:^1.26 --dev --no-install',
+            'composer require mockery/mockery:^1.6 --dev --no-install',
+            'composer require nunomaduro/collision:^8.1 --dev --no-install',
+        ]);
+
     }
 }
