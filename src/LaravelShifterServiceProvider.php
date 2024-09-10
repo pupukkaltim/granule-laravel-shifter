@@ -1,12 +1,12 @@
 <?php
 
-namespace Pkt\StarterKit;
+namespace Granule\LaravelShifter;
 
 use Granule\LaravelShifter\Console\UpgradeCommand;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 
-class StarterKitServiceProvider extends ServiceProvider implements DeferrableProvider
+class LaravelShifterServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     /**
      * Register any application services.
