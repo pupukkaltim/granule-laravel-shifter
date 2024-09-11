@@ -34,6 +34,8 @@ trait ShiftToLaravel11
         copy(__DIR__.'/../../stubs/bootstrap/app.php', base_path('bootstrap/app.php'));
 
         // call refactoring methods
+        $this->refactoringControllers();
+        $this->refactoringModels();
         $this->refactoringConsole();
         $this->refactoringExceptions();
         $this->refactoringMiddleware();
@@ -51,6 +53,33 @@ trait ShiftToLaravel11
         copy(__DIR__.'/../../stubs/app/Http/Controllers/Controller.php', base_path('app/Http/Controllers/Controller.php'));
 
         $this->components->info('Controllers refactored to Laravel 11.x standards');
+    }
+
+    /**
+     * Refactoring models to Laravel 11.x standards
+     * 
+     * @return void
+     */
+    private function refactoringModels()
+    {
+        // get all files in the models directory
+        $files = (new Filesystem)->allFiles(app_path('Models'));
+        
+        // get contents of each file
+        foreach ($files as $file) {
+            // get protected $casts = [ ... ]; from each file
+            $contents = file_get_contents($file);
+            $pattern = '/protected \$casts = \[(.*?)\];/s';
+            preg_match($pattern, $contents, $matches);
+            if (count($matches) > 0) {
+                $newCasts = 'protected casts(): array' . PHP_EOL . '    {' . PHP_EOL . '        return [' . PHP_EOL . '            ' . $matches[1] . PHP_EOL . '        ];' . PHP_EOL . '    }';
+                $this->replaceContent($file, [
+                    $matches[0] => $newCasts,
+                ]);
+            }
+        }
+
+        $this->components->info('Models refactored to Laravel 11.x standards');
     }
 
     /**
