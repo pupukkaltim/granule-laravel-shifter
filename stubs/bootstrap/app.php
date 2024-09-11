@@ -12,11 +12,19 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->append([
+            {{ middleware-global }}
+        ]);
+
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
             \App\Http\Middleware\UserActivityLog::class,
             {{ middleware-web }}
+        ]);
+
+        $middleware->api(append: [
+            {{ middleware-api }}
         ]);
 
         $middleware->alias([
@@ -30,5 +38,21 @@ return Application::configure(basePath: dirname(__DIR__))
         {{ schedule }}
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        {{ exceptions }}
+        $exceptions->dontFlash([
+            'current_password',
+            'password',
+            'password_confirmation',
+        ]);
+
+        $exceptions->reportable(function (Throwable $e) {
+            //
+        })->stop();
+
+        $exceptions->renderable(function (Throwable $e, Request $request) {
+            $request->merge([
+                'error_class' => get_class($e),
+                'error_message' => $e->getMessage(),
+                'stack_trace' => json_decode(json_encode($e->getTrace())),
+            ]);
+        });
     })->create();

@@ -3,6 +3,7 @@
 namespace Granule\LaravelShifter\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Filesystem\Filesystem;
 
 trait ShiftToLaravel11
 {
@@ -28,6 +29,14 @@ trait ShiftToLaravel11
             'composer require fakerphp/faker:^1.23 laravel/breeze:v2.1 laravel/pint:^1.13 laravel/sail:^1.26 mockery/mockery:^1.6 nunomaduro/collision:^8.1 --dev --no-update --quiet',
             'composer update -W --no-scripts --no-interaction'
         ]);
+
+        // copy bootstrap/app.php stub to project
+        copy(__DIR__.'/../../stubs/bootstrap/app.php', base_path('bootstrap/app.php'));
+
+        // call refactoring methods
+        $this->refactoringConsole();
+        $this->refactoringExceptions();
+        $this->refactoringMiddleware();
     }
 
     /**
@@ -37,16 +46,147 @@ trait ShiftToLaravel11
      */
     private function refactoringConsole()
     {
-        // get content of file console/Kernel.php
+        // Register schedule in app/Console/Kernel.php to bootstrap/app.php
         $content = file_get_contents(base_path('app/Console/Kernel.php'));
-        // get any all content inside the schedule method, just take th content inside { } that not commented //
         preg_match('/protected function schedule\(Schedule \$schedule\): void\n    {\n        (.*)\n    }\n\n    /s', $content, $matches);
-        // TODO: $matches[1] contains the content of the schedule method
-        // copy the content of the schedule method to the schedule method in the stubs/bootstrap/app.php
-        copy(__DIR__.'/../../stubs/bootstrap/app.php', base_path('bootstrap/app-new.php'));
-        // replace {{ schedule }} with the content of the schedule method
         $this->replaceContent(base_path('bootstrap/app.php'), [
             '{{ schedule }}' => $matches[1],
+        ]);
+
+        // Remove app/Console directory
+        (new Filesystem)->deleteDirectory(base_path('app/Console'));
+    }
+
+    /**
+     * Refactoring exceptions to Laravel 11.x standards
+     *
+     * @return void
+     */
+    private function refactoringExceptions()
+    {
+        // Remove app/Exceptions
+        (new Filesystem)->deleteDirectory(base_path('app/Exceptions'));
+    }
+
+    /**
+     * Refactoring middleware to Laravel 11.x standards
+     *
+     * @return void
+     */
+    private function refactoringMiddleware()
+    {
+        // Remove files that are not needed in Laravel 11.x
+        (new Filesystem)->delete([
+            app_path('Http/Middleware/Authenticate.php'),
+            app_path('Http/Middleware/EncryptCookies.php'),
+            app_path('Http/Middleware/PreventRequestsDuringMaintenance.php'),
+            app_path('Http/Middleware/RedirectIfAuthenticated.php'),
+            app_path('Http/Middleware/TrimStrings.php'),
+            app_path('Http/Middleware/TrustHosts.php'),
+            app_path('Http/Middleware/TrustProxies.php'),
+            app_path('Http/Middleware/ValidateSignature.php'),
+            app_path('Http/Middleware/VerifyCsrfToken.php'),
+        ]);
+
+        // get content of app/Http/Kernel.php
+        $content = file_get_contents(base_path('app/Http/Kernel.php'));
+
+        // get content inside protected $middleware = [ ... ];
+        preg_match('/protected \$middleware = \[(.*?)\];/s', $content, $matches);
+        $excludeMiddleware = [
+            '// \App\Http\Middleware\TrustHosts::class',
+            '\App\Http\Middleware\TrustProxies::class',
+            '\Illuminate\Http\Middleware\HandleCors::class',
+            '\App\Http\Middleware\PreventRequestsDuringMaintenance::class',
+            '\Illuminate\Foundation\Http\Middleware\ValidatePostSize::class',
+            '\App\Http\Middleware\TrimStrings::class',
+            '\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class',
+            '',
+        ];
+        $middleware = $matches[1];
+        $middleware = explode(',', $middleware);
+        $middleware = array_map(function ($item) {
+            return trim($item);
+        }, $middleware);
+        $middleware = array_diff($middleware, $excludeMiddleware);
+
+        // get content inside protected $middlewareGroups = [ web => [ ... ] ];
+        $excludeMiddlewareGroupsWeb = [
+            '\App\Http\Middleware\EncryptCookies::class',
+            '\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class',
+            '\Illuminate\Session\Middleware\StartSession::class',
+            '\Illuminate\View\Middleware\ShareErrorsFromSession::class',
+            '\App\Http\Middleware\VerifyCsrfToken::class',
+            '\Illuminate\Routing\Middleware\SubstituteBindings::class',
+            '',
+        ];
+        preg_match('/protected \$middlewareGroups = \[(.*?)\];/s', $content, $matches);
+        $middlewareGroupsWeb = $matches[1];
+        preg_match('/\'web\' => \[(.*?)\],/s', $middlewareGroupsWeb, $matches);
+        $middlewareGroupsWeb = $matches[1];
+        $middlewareGroupsWeb = explode(',', $middlewareGroupsWeb);
+        $middlewareGroupsWeb = array_map(function ($item) {
+            return trim($item);
+        }, $middlewareGroupsWeb);
+        $middlewareGroupsWeb = array_diff($middlewareGroupsWeb, $excludeMiddlewareGroupsWeb);
+
+        // get content inside protected $middlewareGroups = [ api => [ ... ] ];
+        $excludeMiddlewareGroupsApi = [
+            '\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class',
+            '\Illuminate\Routing\Middleware\ThrottleRequests::class.\':api\'',
+            '\Illuminate\Routing\Middleware\SubstituteBindings::class',
+            '',
+        ];
+        preg_match('/protected \$middlewareGroups = \[(.*?)\];/s', $content, $matches);
+        $middlewareGroupsApi = $matches[1];
+        preg_match('/\'api\' => \[(.*?)\],/s', $middlewareGroupsApi, $matches);
+        $middlewareGroupsApi = $matches[1];
+        $middlewareGroupsApi = explode(',', $middlewareGroupsApi);
+        $middlewareGroupsApi = array_map(function ($item) {
+            return trim($item);
+        }, $middlewareGroupsApi);
+        $middlewareGroupsApi = array_diff($middlewareGroupsApi, $excludeMiddlewareGroupsApi);
+
+        // get content inside protected $middlewareAliases = [ ... ];
+        $excludeMiddlewareAliases = [
+            '\'auth\' => \App\Http\Middleware\Authenticate::class',
+            '\'auth.basic\' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class',
+            '\'auth.session\' => \Illuminate\Session\Middleware\AuthenticateSession::class',
+            '\'cache.headers\' => \Illuminate\Http\Middleware\SetCacheHeaders::class',
+            '\'guest\' => \App\Http\Middleware\RedirectIfAuthenticated::class',
+            '\'password.confirm\' => \Illuminate\Auth\Middleware\RequirePassword::class',
+            '\'precognitive\' => \Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class',
+            '\'signed\' => \App\Http\Middleware\ValidateSignature::class',
+            '\'throttle\' => \Illuminate\Routing\Middleware\ThrottleRequests::class',
+            '\'verified\' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class',
+            '',
+        ];
+        preg_match('/protected \$middlewareAliases = \[(.*?)\];/s', $content, $matches);
+        $middlewareAliases = $matches[1];
+        $middlewareAliases = explode(',', $middlewareAliases);
+        $middlewareAliases = array_map(function ($item) {
+            return trim($item);
+        }, $middlewareAliases);
+        $middlewareAliases = array_diff($middlewareAliases, $excludeMiddlewareAliases);
+
+        $additionalMiddleware = [
+            'middleware' => $middleware,
+            'middlewareGroupsWeb' => $middlewareGroupsWeb,
+            'middlewareGroupsApi' => $middlewareGroupsApi,
+            'middlewareAliases' => $middlewareAliases,
+        ];
+
+        // replace content {{ middleware-global }}, {{ middleware-web }}, {{ middleware-api }}, {{ middleware-alias }} in bootstrap/app.php
+        $middlewareGlobal = empty($additionalMiddleware['middleware']) ? '// . . .' : implode(",\n            ", $additionalMiddleware['middleware']);
+        $middlewareWeb = empty($additionalMiddleware['middlewareGroupsWeb']) ? '// . . .' : implode(",\n            ", $additionalMiddleware['middlewareGroupsWeb']);
+        $middlewareApi = empty($additionalMiddleware['middlewareGroupsApi']) ? '// . . .' : implode(",\n            ", $additionalMiddleware['middlewareGroupsApi']);
+        $middlewareAlias = empty($additionalMiddleware['middlewareAliases']) ? '// . . .' : implode(",\n            ", $additionalMiddleware['middlewareAliases']);
+
+        $this->replaceContent(base_path('bootstrap/app.php'), [
+            '{{ middleware-global }}' => $middlewareGlobal,
+            '{{ middleware-web }}' => $middlewareWeb,
+            '{{ middleware-api }}' => $middlewareApi,
+            '{{ middleware-alias }}' => $middlewareAlias,
         ]);
     }
 }
