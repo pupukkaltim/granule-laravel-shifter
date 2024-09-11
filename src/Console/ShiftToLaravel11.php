@@ -72,7 +72,17 @@ trait ShiftToLaravel11
             $pattern = '/protected \$casts = \[(.*?)\];/s';
             preg_match($pattern, $contents, $matches);
             if (count($matches) > 0) {
-                $newCasts = 'protected casts(): array' . PHP_EOL . '    {' . PHP_EOL . '        return [' . PHP_EOL . '            ' . $matches[1] . PHP_EOL . '        ];' . PHP_EOL . '    }';
+                $casts = explode("\n", $matches[1]);
+                $casts = array_map(function ($cast) {
+                    return trim($cast);
+                }, $casts);
+                $casts = array_filter($casts, function ($cast) {
+                    return !empty($cast);
+                });
+                $casts = array_map(function ($cast) {
+                    return '            '.$cast;
+                }, $casts);
+                $newCasts = 'protected function casts(): array' . PHP_EOL . '    {' . PHP_EOL . '        return [' . PHP_EOL . '            ' . $casts . PHP_EOL . '        ];' . PHP_EOL . '    }';
                 $this->replaceContent($file, [
                     $matches[0] => $newCasts,
                 ]);
