@@ -37,6 +37,7 @@ trait ShiftToLaravel11
         $this->refactoringConsole();
         $this->refactoringExceptions();
         $this->refactoringMiddleware();
+        $this->refactoringProviders();
     }
 
     /**
@@ -177,16 +178,53 @@ trait ShiftToLaravel11
         ];
 
         // replace content {{ middleware-global }}, {{ middleware-web }}, {{ middleware-api }}, {{ middleware-alias }} in bootstrap/app.php
-        $middlewareGlobal = empty($additionalMiddleware['middleware']) ? '// . . .' : implode(",\n            ", $additionalMiddleware['middleware']);
-        $middlewareWeb = empty($additionalMiddleware['middlewareGroupsWeb']) ? '// . . .' : implode(",\n            ", $additionalMiddleware['middlewareGroupsWeb']);
-        $middlewareApi = empty($additionalMiddleware['middlewareGroupsApi']) ? '// . . .' : implode(",\n            ", $additionalMiddleware['middlewareGroupsApi']);
-        $middlewareAlias = empty($additionalMiddleware['middlewareAliases']) ? '// . . .' : implode(",\n            ", $additionalMiddleware['middlewareAliases']);
+        $middlewareGlobal = empty($additionalMiddleware['middleware']) ? '// ...' : implode(",\n            ", $additionalMiddleware['middleware']);
+        $middlewareWeb = empty($additionalMiddleware['middlewareGroupsWeb']) ? '// ...' : implode(",\n            ", $additionalMiddleware['middlewareGroupsWeb']);
+        $middlewareApi = empty($additionalMiddleware['middlewareGroupsApi']) ? '// ...' : implode(",\n            ", $additionalMiddleware['middlewareGroupsApi']);
+        $middlewareAlias = empty($additionalMiddleware['middlewareAliases']) ? '// ...' : implode(",\n            ", $additionalMiddleware['middlewareAliases']);
 
         $this->replaceContent(base_path('bootstrap/app.php'), [
             '{{ middleware-global }}' => $middlewareGlobal,
             '{{ middleware-web }}' => $middlewareWeb,
             '{{ middleware-api }}' => $middlewareApi,
             '{{ middleware-alias }}' => $middlewareAlias,
+        ]);
+
+        // remove app/Http/Kernel.php
+        (new Filesystem)->delete(base_path('app/Http/Kernel.php'));
+    }
+
+    /**
+     * Refactoring providers to Laravel 11.x standards
+     * 
+     * @return void
+     */
+    private function refactoringProviders()
+    {
+        // copy stubs/bootstrap/providers.php to project
+        copy(__DIR__.'/../../stubs/bootstrap/providers.php', base_path('bootstrap/providers.php'));
+
+        // get all classes in app/Providers directory
+        $files = (new Filesystem)->files(base_path('app/Providers'));
+        $classes = array_map(function ($file) {
+            $content = file_get_contents($file);
+            preg_match('/class (.*) extends /', $content, $matches);
+            return $matches[1];
+        }, $files);
+        $excludeClasses = [
+            'AppServiceProvider',
+            'AuthServiceProvider',
+            'BroadcastServiceProvider',
+            'EventServiceProvider',
+            'RouteServiceProvider',
+        ];
+        $classes = array_diff($classes, $excludeClasses);
+        $classes = array_map(function ($class) {
+            return 'App\Providers\\'.$class.'::class';
+        }, $classes);
+
+        $this->replaceContent(base_path('bootstrap/providers.php'), [
+            '{{ providers }}' => empty($classes) ? '// ...' : implode(",\n    ", $classes),
         ]);
     }
 }
