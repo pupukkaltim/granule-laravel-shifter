@@ -56,6 +56,8 @@ trait ShiftToLaravel11
 
         // Remove app/Console directory
         (new Filesystem)->deleteDirectory(base_path('app/Console'));
+
+        $this->components->info('Console refactored to Laravel 11.x standards');
     }
 
     /**
@@ -67,6 +69,8 @@ trait ShiftToLaravel11
     {
         // Remove app/Exceptions
         (new Filesystem)->deleteDirectory(base_path('app/Exceptions'));
+
+        $this->components->info('Exceptions refactored to Laravel 11.x standards');
     }
 
     /**
@@ -192,6 +196,8 @@ trait ShiftToLaravel11
 
         // remove app/Http/Kernel.php
         (new Filesystem)->delete(base_path('app/Http/Kernel.php'));
+
+        $this->components->info('Middleware refactored to Laravel 11.x standards');
     }
 
     /**
@@ -226,5 +232,7 @@ trait ShiftToLaravel11
         $this->replaceContent(base_path('bootstrap/providers.php'), [
             '{{ providers }}' => empty($classes) ? '// ...' : implode(",\n    ", $classes),
         ]);
+
+        $this->components->info('Providers refactored to Laravel 11.x standards');
     }
 }
