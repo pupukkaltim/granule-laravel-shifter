@@ -41,6 +41,19 @@ trait ShiftToLaravel11
     }
 
     /**
+     * Refactoring controllers to Laravel 11.x standards
+     * 
+     * @return void
+     */
+    private function refactoringControllers()
+    {
+        // copy stubs/app/Http/Controllers/Controller.php to project
+        copy(__DIR__.'/../../stubs/app/Http/Controllers/Controller.php', base_path('app/Http/Controllers/Controller.php'));
+
+        $this->components->info('Controllers refactored to Laravel 11.x standards');
+    }
+
+    /**
      * Refactoring console to Laravel 11.x standards
      *
      * @return void
