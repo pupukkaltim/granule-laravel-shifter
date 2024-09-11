@@ -29,4 +29,24 @@ trait ShiftToLaravel11
             'composer update -W --no-scripts --no-interaction'
         ]);
     }
+
+    /**
+     * Refactoring console to Laravel 11.x standards
+     *
+     * @return void
+     */
+    private function refactoringConsole()
+    {
+        // get content of file console/Kernel.php
+        $content = file_get_contents(base_path('app/Console/Kernel.php'));
+        // get any all content inside the schedule method, just take th content inside { } that not commented //
+        preg_match('/protected function schedule\(Schedule \$schedule\): void\n    {\n        (.*)\n    }\n\n    /s', $content, $matches);
+        // TODO: $matches[1] contains the content of the schedule method
+        // copy the content of the schedule method to the schedule method in the stubs/bootstrap/app.php
+        copy(__DIR__.'/../../stubs/bootstrap/app.php', base_path('bootstrap/app-new.php'));
+        // replace {{ schedule }} with the content of the schedule method
+        $this->replaceContent(base_path('bootstrap/app.php'), [
+            '{{ schedule }}' => $matches[1],
+        ]);
+    }
 }
