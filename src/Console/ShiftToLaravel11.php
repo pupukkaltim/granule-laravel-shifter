@@ -22,12 +22,20 @@ trait ShiftToLaravel11
             '"php": "^8.1"' => '"php": "^8.2"',
         ]);
 
+        // update granule/starter-kit to support Laravel 11.x
+        $this->runCommands([
+            'composer update granule/starter-kit --no-scripts',
+        ]);
+
         // change package versions
         $this->runCommands([
-            'composer require granule/starter-kit:dev-v6-dev --no-update --quiet',
-            'composer require inertiajs/inertia-laravel:^1.3.0 laravel/framework:^11.22 laravel/reverb:^1.3 laravel/sanctum:^4.0 laravel/tinker:^2.9 --no-update --quiet',
+            'composer require inertiajs/inertia-laravel:^1.3.0 laravel/framework:^11.9 laravel/reverb:^1.3 laravel/sanctum:^4.0 laravel/tinker:^2.9 --no-update --quiet',
             'composer require fakerphp/faker:^1.23 laravel/breeze:v2.1 laravel/pint:^1.13 laravel/sail:^1.26 mockery/mockery:^1.6 nunomaduro/collision:^8.1 --dev --no-update --quiet',
-            'composer update -W --no-scripts --no-interaction'
+        ]);
+
+        // update composer
+        $this->runCommands([
+            'composer update -W',
         ]);
 
         // copy bootstrap/app.php stub to project
