@@ -79,9 +79,7 @@ trait ShiftToLaravel11
                 $casts = array_filter($casts, function ($cast) {
                     return !empty($cast);
                 });
-                $casts = array_map(function ($cast) {
-                    return '            '.$cast;
-                }, $casts);
+                $casts = implode("\n            ", $casts);
                 $newCasts = 'protected function casts(): array' . PHP_EOL . '    {' . PHP_EOL . '        return [' . PHP_EOL . '            ' . $casts . PHP_EOL . '        ];' . PHP_EOL . '    }';
                 $this->replaceContent($file, [
                     $matches[0] => $newCasts,

@@ -31,19 +31,19 @@ class UpgradeCommand extends Command implements PromptsForMissingInput
      */
     public function handle()
     {
-        // cek laravel version
+        // check laravel version
         $this->components->info('Laravel version: ' . app()->version());
 
-        // choice version
-        $version = $this->choice('Which version do you want to upgrade to?', [
-            '11.x',
-            '12.x',
-        ], 0);
-
-        if ($version === '11.x') {
+        // confirmation if the user wants to upgrade to newer version
+        $installedVersion = (int) explode('.', app()->version())[0];
+        if (!$this->confirm('Do you want to upgrade to laravel ' . $installedVersion + 1 . '.x?')) {
+            return 0;
+        }
+        
+        if ($installedVersion === 10) {
             $this->shiftToLaravel11();
-        } else if ($version === '12.x') {
-            $this->info('Upgrading to Laravel 12.x');
+        } else if ($installedVersion === 11) {
+            $this->info('Upgrading to Laravel 12.x is not supported yet.');
         }
 
         return 1;
