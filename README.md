@@ -32,13 +32,18 @@ composer config -l
 composer config --global github-oauth.github.com "your-pat"
 ```
 
-3. Register Starter Kit Repository to Project
+1. Register Starter Kit Repository to Project
 ```bash
 # to register it locally on your project
 composer config repositories.granule-laravel-shifter vcs https://github.com/sallieeky/granule-laravel-shifter.git
 
 # or to register it globally in your device 
 composer config --global repositories.granule-laravel-shifter vcs https://github.com/sallieeky/granule-laravel-shifter.git
+```
+
+2. Install Granule Laravel Shifter
+```bash
+composer require granule/laravel-shifter
 ```
 
 ## How To Use
@@ -50,7 +55,12 @@ composer config --global repositories.granule-laravel-shifter vcs https://github
 ```bash
 php artisan pkt:upgrade
 ```
-5. After the upgrade process is done, you need to check your application for any error or conflict.
+5. Check laravel installed version using this command.
+```bash
+php artisan --version
+```
+6. After the upgrade process is done, you need to check your application for any error or conflict.
+
 
 ## Authors
 
