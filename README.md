@@ -20,6 +20,11 @@ For stable package install using this command to get the latest version. **(RECO
 composer require granule/laravel-shifter --dev
 ```
 
+To run the upgrade process, you need to run this command.
+```bash
+php artisan pkt:upgrade
+```
+
 ## Full Installation
 
 Before you install granule laravel shifter, you need to setup the composer first. You need to make [Github Personal Access Token](https://github.com/settings/tokens/new?scopes=repo&description=granule-starter-kit) first. If your token **not registered** on your composer, you need to register first using this command.
