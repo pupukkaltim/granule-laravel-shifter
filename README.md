@@ -17,7 +17,7 @@ Welcome to Granule Laravel Shifter, a Laravel package that provides a quick way 
 
 For stable package install using this command to get the latest version. **(RECOMMENDED)**
 ```bash
-composer require granule/laravel-shifter
+composer require granule/laravel-shifter --dev
 ```
 
 ## Full Installation
@@ -43,7 +43,7 @@ composer config --global repositories.granule-laravel-shifter vcs https://github
 
 2. Install Granule Laravel Shifter
 ```bash
-composer require granule/laravel-shifter
+composer require granule/laravel-shifter --dev
 ```
 
 ## How To Use
