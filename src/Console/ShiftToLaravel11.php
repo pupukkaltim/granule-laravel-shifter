@@ -29,7 +29,7 @@ trait ShiftToLaravel11
 
         // change package versions
         $this->runCommands([
-            'composer require inertiajs/inertia-laravel:^1.3.0 laravel/framework:^11.9 laravel/reverb:^1.3 laravel/sanctum:^4.0 laravel/tinker:^2.9 --no-update --quiet',
+            'composer require inertiajs/inertia-laravel:^1.3.0 laravel/framework:^11.9 laravel/reverb:^1.3 laravel/sanctum:^4.0 laravel/tinker:^2.9 pusher/pusher-php-server:^7.2 spatie/laravel-permission:^6.1 staudenmeir/laravel-migration-views:^1.7 --no-update --quiet',
             'composer require fakerphp/faker:^1.23 laravel/breeze:v2.1 laravel/pint:^1.13 laravel/sail:^1.26 mockery/mockery:^1.6 nunomaduro/collision:^8.1 --dev --no-update --quiet',
         ]);
 
