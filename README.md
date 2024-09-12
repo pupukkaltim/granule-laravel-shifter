@@ -40,10 +40,10 @@ composer config --global github-oauth.github.com "your-pat"
 1. Register Starter Kit Repository to Project
 ```bash
 # to register it locally on your project
-composer config repositories.granule-laravel-shifter vcs https://github.com/sallieeky/granule-laravel-shifter.git
+composer config repositories.granule-laravel-shifter vcs https://github.com/pupukkaltim/granule-laravel-shifter.git
 
 # or to register it globally in your device 
-composer config --global repositories.granule-laravel-shifter vcs https://github.com/sallieeky/granule-laravel-shifter.git
+composer config --global repositories.granule-laravel-shifter vcs https://github.com/pupukkaltim/granule-laravel-shifter.git
 ```
 
 2. Install Granule Laravel Shifter
