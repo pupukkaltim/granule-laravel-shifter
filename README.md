@@ -53,18 +53,18 @@ composer require granule/laravel-shifter --dev
 
 ## How To Use
 
-1. Make sure your application installed with **Granule Starter Kit**.
+1. Make sure your application installed with [Granule Starter Kit](https://github.com/pupukkaltim/granule-starter-kit).
 2. Make sure you have committed all your changes before running the command.
 3. **(RECOMMENDED)** Make a new branch for the upgrade process to avoid any conflict.
 4. Run the command below to upgrade your application.
 ```bash
 php artisan pkt:upgrade
 ```
-5. Check laravel installed version using this command.
+1. Check laravel installed version using this command.
 ```bash
 php artisan --version
 ```
-6. After the upgrade process is done, you need to check your application for any error or conflict.
+1. After the upgrade process is done, you need to check your application for any error or conflict.
 
 
 ## Authors
