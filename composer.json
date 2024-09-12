@@ -1,6 +1,6 @@
 {
     "name": "granule/laravel-shifter",
-    "description": "Shift your Laravel project that integrated with Granule Starter Kit version to the newer version",
+    "description": "Shift laravel version from project that integrated with Granule Starter Kit to the newer version",
     "license": "MIT",
     "type": "library",
     "autoload": {
