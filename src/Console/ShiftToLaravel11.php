@@ -48,6 +48,8 @@ trait ShiftToLaravel11
         $this->refactoringExceptions();
         $this->refactoringMiddleware();
         $this->refactoringProviders();
+
+        $this->components->info('Laravel 11.x upgrade completed successfully');
     }
 
     /**

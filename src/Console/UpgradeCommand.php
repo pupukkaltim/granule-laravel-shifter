@@ -40,12 +40,29 @@ class UpgradeCommand extends Command implements PromptsForMissingInput
             return 0;
         }
         
-        if ($installedVersion === 10) {
+        if ($installedVersion === 10 && $this->verifyLaravel11Requirements()) {
             $this->shiftToLaravel11();
         } else if ($installedVersion === 11) {
-            $this->info('Upgrading to Laravel 12.x is not supported yet.');
+            $this->components->error('Upgrading to Laravel 12.x is not supported yet.');
         }
 
         return 1;
     }
+
+    /**
+     * Verify the requirements for upgrading to Laravel 11.x
+     * 
+     * @return bool
+     */
+    public function verifyLaravel11Requirements(): bool
+    {
+        // Verify PHP version
+        if (version_compare(PHP_VERSION, '8.2.0', '<')) {
+            $this->components->error('PHP 8.2.0 or higher is required to upgrade to Laravel 11.x');
+            return false;
+        }
+
+        return true;
+    }
+
 }
