@@ -32,11 +32,6 @@ Before you install granule laravel shifter, you need to setup the composer first
 ```bash
 composer config -l
 ```
-- To set github token to composer config on your device. **(you can ignore this step if you already have registered your token)**
-```bash
-composer config --global github-oauth.github.com "your-pat"
-```
-
 1. Register Starter Kit Repository to Project
 ```bash
 # to register it locally on your project
@@ -69,4 +64,4 @@ php artisan --version
 
 ## Authors
 
-- [Sallie Mansurina](https://github.com/sallieeky)
+- [Sallie Trixie Zebada Mansurina](https://github.com/sallieeky)
