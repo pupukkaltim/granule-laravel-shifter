@@ -39,7 +39,7 @@ trait ShiftToLaravel11
         ]);
 
         // copy bootstrap/app.php stub to project
-        copy(__DIR__.'/../../stubs/bootstrap/app.php', base_path('bootstrap/app.php'));
+        copy(__DIR__.'/../../stubs/10to11/bootstrap/app.php', base_path('bootstrap/app.php'));
 
         // call refactoring methods
         $this->refactoringControllers();
@@ -59,8 +59,8 @@ trait ShiftToLaravel11
      */
     private function refactoringControllers()
     {
-        // copy stubs/app/Http/Controllers/Controller.php to project
-        copy(__DIR__.'/../../stubs/app/Http/Controllers/Controller.php', base_path('app/Http/Controllers/Controller.php'));
+        // copy stubs/10to11/app/Http/Controllers/Controller.php to project
+        copy(__DIR__.'/../../stubs/10to11/app/Http/Controllers/Controller.php', base_path('app/Http/Controllers/Controller.php'));
 
         $this->components->info('Controllers refactored to Laravel 11.x standards');
     }
@@ -267,8 +267,8 @@ trait ShiftToLaravel11
      */
     private function refactoringProviders()
     {
-        // copy stubs/bootstrap/providers.php to project
-        copy(__DIR__.'/../../stubs/bootstrap/providers.php', base_path('bootstrap/providers.php'));
+        // copy stubs/10to11/bootstrap/providers.php to project
+        copy(__DIR__.'/../../stubs/10to11/bootstrap/providers.php', base_path('bootstrap/providers.php'));
 
         // get all classes in app/Providers directory
         $files = (new Filesystem)->files(base_path('app/Providers'));
